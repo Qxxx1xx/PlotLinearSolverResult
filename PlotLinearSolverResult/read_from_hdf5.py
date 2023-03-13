@@ -10,11 +10,19 @@ Version          :1.0
 
 import h5py
 import numpy as np
-
-def read_h5(filepath):
-    return h5py.File(filepath,'r')
+import matplotlib.pyplot as plt
 
 def print_to_dset(h5obj,depth=0):
+    """
+    Print all directoty information in the h5 object to the dataset
+    Arguments
+    ---------
+    h5obj : h5py._hl.group.File or h5py._hl.group.Group
+        a h5 object
+    Returns
+    -------
+    none
+    """
     if type(h5obj) == h5py._hl.dataset.Dataset:
         return h5obj.name
     dset_paths = []
@@ -37,76 +45,125 @@ def print_to_dset(h5obj,depth=0):
 
     return dset_paths
 
-def get_dset_attrs_keys(h5_file,path):
-    return list(h5_file[path].attrs.keys())
+class H5File:
+    def __init__(self,filepath):
+        """
+        Initializa the H5File from the file path.
+        Arguments
+        ---------
+        filepath : str
+            the file path
+        """
+        self.h5file = h5py.File(filepath,'r')
 
-def get_dset_attrs_value(dset,key):
-    for attr in dset.attrs.items():
-        if attr[0] == key:
-            return attr[1][0]
+    def print_directory_information(self):
+        """
+        Print the diractory information of the h5file to the dataset.
+        """
+        return print_to_dset(self.h5file)
+        
+    def get_keys_attrs_dset(self,dset_path):
+        """
+        Get the keys of the attributes of the dataset.
+        Arguments
+        ---------
+        dset_path : str
+            the path of the dataset
+        Returns
+        -------
+        the keys of the attributes of the dataset
+        """
+        return list(self.h5file[dset_path].attrs.keys())
+        
+    def get_value_attr_dset(self,dset_path,attr_key):
+        """
+        Get the value of the attrubute of the dataset.
+        Arguments
+        ---------
+        dset_path : str
+            the path of the dataset
+        attr_key : str
+            the key of the attribute of the dataset
+        Returns
+        -------
+        the value of the attrubute of the dataset
+        """
+        for attr in self.h5file[dset_path].attrs.items():
+            if attr[0] == attr_key:
+                return attr[1][0]
+        
+    def get_index_attr_dset_in_datas(self,dset_path,attr_key):
+        """
+        Get the index of the attribute of the dataset in the data over times.
+        Arguments
+        ---------
+        dset_path : str
+            the path of the dataset
+        attr_key : str
+            the key of the attribute of the dataset
+        Returns
+        -------
+        the index of the attribute of the dataset in the data over times
+        """
+        dset = self.h5file[dset_path]
+        if dset.size == dset.shape[0]:
+            return dset[self.get_value_attr_dset(dset_path,attr_key)]
+        else:
+            return dset[:,self.get_value_attr_dset(dset_path,attr_key)]
+        
+    def get_TimeStamps(self):
+        """
+        get time stamp values
+        Returns
+        -------
+        time stamp values
+        """
+        return np.array(self.h5file['TimeStamps'])
 
-def get_key_index(dset,key):
-    return dset[:,get_dset_attrs_value(dset,key)]
+    def get_numTimes(self):
+        """
+        get number of times
+        Returns
+        -------
+        numbre of times
+        """
+        return self.get_TimeStamps().size
+    
+    def get_datas_over_time(self,group):
+        """
+        Get datas over time from group
+        Arguments
+        ---------
+        group : h5py._hl.group.Group
+            the group include datas
+        Returns
+        -------
+        datas
+        """
+        datas = []
+        for i in range(self.get_numTimes()):
+            datas.append(group[str(i)])
+        return np.array(datas)
 
-def get_datas_dsetpath(h5_file,path):
-    """
-    Get datas from h5 file with path and indices.
-    Arguments
-    ---------
-    h5_file : h5py._hl.files.File
-        h5 file
-    path : str
-        datas path in h5 file
-    Returns
-    -------
-    datas : numpy.ndarray
-    """
-    return np.array(h5_file[path])
+        
 
-def get_datas_dataspath_indices(h5_file,path,indices):
-    """
-    Get datas from h5 file with path and indices.
-    Arguments
-    ---------
-    h5_file : h5py._hl.files.File
-        h5 file
-    path : str
-        datas path in h5 file
-    indices : list
-        datas of index
-    Returns
-    -------
-    datas : numpy.ndarray
-    """
-    datas = []
-    group = h5_file[path]
-    for name in group.keys():
-        if str.isdigit(name):
-            data = group[name][indices]
-            datas.append(data)
-
-    return np.array(datas)
-
-def get_datas_indexpath_attrname(h5_file,path,name):
-    """
-    Get datas from h5 file with path of 'Index' group's dataset.
-    Arguments
-    ---------
-    h5_file : h5py._hl.files.File
-        h5 file
-    path : str
-        path of 'Index' group's dataset
-    name : str
-        one of dataset attributes name
-    Returns
-    -------
-    datas : numpy.ndarray
-    """
-    index_dset_path = path
-    attribute_name = name
-    indices = get_key_index(h5_file[index_dset_path],attribute_name)
-    datas_group_path = str.split(index_dset_path,'Index')[0]
-    return get_datas_dataspath_indices(h5_file,datas_group_path,indices)
-
-def f():
-    print('test')
+    def get_animation_datas(self):
+        """
+        Get animation datas over time.
+        Returns
+        -------
+        animation datas over time        
+        """
+        animation_group = self.h5file['Animation']
+        return self.get_datas_over_time(animation_group)
+    
+    def get_curve_datas(self):
+        """
+        Get curve datas over time.
+        Returns
+        -------
+        curve datas over time        
+        """
+        curve_group = self.h5file['Curve']
+        return self.get_datas_over_time(curve_group)
+        
