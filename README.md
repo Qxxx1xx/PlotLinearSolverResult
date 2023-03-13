@@ -3,12 +3,22 @@ PlotLinearSolverResult
 
 This project is for plot LinearMSTMM solver result that is write with hdf5.
 
+First import this package.
 ```python
 import PlotLinearSolverResult.read_from_hdf5 as rh
 import matplotlib.pyplot as plt
 import numpy as np
+```
 
+Then, initialize a H5File from h5 file path.
+
+```
 f = rh.H5File('test_write_vibration_characteristics.h5')
+```
+
+Using `print_directory_information` that can print the diractory information of the h5file to the dataset.
+
+```
 f.print_directory_information()
 ```
 ```text
@@ -48,7 +58,7 @@ f.print_directory_information()
 ​     '/TimeStamps']
 ```
 
-
+Get the keys of the attributes of the dataset.
 
 ```python
 keys = f.get_keys_attrs_dset('/Animation/Index/Part_Beam/Part_BeamNodes')
@@ -58,6 +68,14 @@ keys[5]
 ```
 ​    'PhysicalDisplacementY'
 ```
+
+Using `get_index_attr_dset_in_datas` to get the index of the attribute of the dataset in the data over times.
+
+Using `get_animation_datas` to get animation datas over time.
+
+Using `get_TimesStamps` to get TimesStamps datas.
+
+Finally, you can plot with times and datas.
 
 ```python
 index = f.get_index_attr_dset_in_datas('/Animation/Index/Part_Beam/Part_BeamNodes',keys[5])
