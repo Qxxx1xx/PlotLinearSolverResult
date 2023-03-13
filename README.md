@@ -3,55 +3,72 @@ PlotLinearSolverResult
 
 This project is for plot LinearMSTMM solver result that is write with hdf5.
 
-Project Organization
-------------
+```python
+import PlotLinearSolverResult.read_from_hdf5 as rh
+import matplotlib.pyplot as plt
+import numpy as np
 
-    ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
-    ├── README.md          <- The top-level README for developers using this project.
-    ├── data
-    │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been transformed.
-    │   ├── processed      <- The final, canonical data sets for modeling.
-    │   └── raw            <- The original, immutable data dump.
-    │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
-    │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
-    │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
-    │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-    │
-    ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures        <- Generated graphics and figures to be used in reporting
-    │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
-    │
-    ├── setup.py           <- makes project pip installable (pip install -e .) so PlotLinearSolverResult can be imported
-    ├── PlotLinearSolverResult                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes PlotLinearSolverResult a Python module
-    │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
-    │
-    └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
+f = rh.H5File('test_write_vibration_characteristics.h5')
+f.print_directory_information()
+```
+```text
+​    ├──Animation
+​       └──Index
+​          ├──Ground
+​             └──Frame
+​          └──Part_Beam
+​             ├──Frame
+​             └──Part_BeamNodes
+​    ├──Curve
+​       └──Index
+​          ├──Ground
+​             └──Markers
+​                └──Marker_0
+​          └──Part_Beam
+​             └──Nodes
+​    ├──ModalInformation
+​       ├──Index
+​          ├──Ground
+​             └──Frame
+​          └──Part_Beam
+​             ├──Frame
+​             └──Part_BeamNodes
+​       ├──NaturalFrequencies
+​       └──SystemModalMass
+​    └──TimeStamps
+​    [[[['/Animation/Index/Ground/Frame'],
+​       ['/Animation/Index/Part_Beam/Frame',
+​        '/Animation/Index/Part_Beam/Part_BeamNodes']]],
+​     [[[['/Curve/Index/Ground/Markers/Marker_0']], [[]]]],
+​     [[['/ModalInformation/Index/Ground/Frame'],
+​       ['/ModalInformation/Index/Part_Beam/Frame',
+​        '/ModalInformation/Index/Part_Beam/Part_BeamNodes']],
+​      '/ModalInformation/NaturalFrequencies',
+​      '/ModalInformation/SystemModalMass'],
+​     '/TimeStamps']
+```
 
 
---------
 
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+```python
+keys = f.get_keys_attrs_dset('/Animation/Index/Part_Beam/Part_BeamNodes')
+keys[5]
+```
+
+```
+​    'PhysicalDisplacementY'
+```
+
+```python
+index = f.get_index_attr_dset_in_datas('/Animation/Index/Part_Beam/Part_BeamNodes',keys[5])
+animation_datas = f.get_animation_datas()
+times = f.get_TimeStamps()
+plt.plot(times,animation_datas[:,index[0]])
+```
+
+```
+​    [<matplotlib.lines.Line2D at 0x1ef4062c8d0>]
+```
+
+![image-20230313114802427](https://s1.vika.cn/space/2023/03/13/86860a0b033d447590286ed0b0cd68dd)
+    

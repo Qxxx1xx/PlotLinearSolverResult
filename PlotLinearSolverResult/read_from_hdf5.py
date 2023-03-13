@@ -10,7 +10,6 @@ Version          :1.0
 
 import h5py
 import numpy as np
-import matplotlib.pyplot as plt
 
 def print_to_dset(h5obj,depth=0):
     """
