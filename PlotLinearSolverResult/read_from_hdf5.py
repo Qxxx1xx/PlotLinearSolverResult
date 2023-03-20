@@ -61,9 +61,9 @@ class H5File:
         """
         return print_to_dset(self.h5file)
         
-    def get_keys_attrs_dset(self,dset_path):
+    def get_keys_attr_dset(self,dset_path):
         """
-        Get the keys of the attributes of the dataset.
+        Get the keys of the attribute of the dataset.
         Arguments
         ---------
         dset_path : str
@@ -91,7 +91,7 @@ class H5File:
             if attr[0] == attr_key:
                 return attr[1][0]
         
-    def get_index_attr_dset_in_datas(self,dset_path,attr_key):
+    def get_index_attr_dset_in_data(self,dset_path,attr_key):
         """
         Get the index of the attribute of the dataset in the data over times.
         Arguments
@@ -109,6 +109,27 @@ class H5File:
             return dset[self.get_value_attr_dset(dset_path,attr_key)]
         else:
             return dset[:,self.get_value_attr_dset(dset_path,attr_key)]
+        
+    def get_keys_attr_dset_with_index_in_data(self,dset_path):
+        """
+        Get the keys of the attribute of the dataset with the index in the data.
+        Arguments
+        ---------
+        dset_path : str
+            the path of the dataset        
+        Returns
+        -------
+        the keys of the attribute of the dataset with the index in the data
+        """
+        res = []
+        keys = self.get_keys_attr_dset(dset_path)
+        for key in keys:
+            index = self.get_index_attr_dset_in_data(dset_path,key)
+            res.append([key,index])
+
+        return res
+        
+        
         
     def get_TimeStamps(self):
         """
@@ -128,41 +149,41 @@ class H5File:
         """
         return self.get_TimeStamps().size
     
-    def get_datas_over_time(self,group):
+    def get_data_over_time(self,group):
         """
-        Get datas over time from group
+        Get data over time from group
         Arguments
         ---------
         group : h5py._hl.group.Group
-            the group include datas
+            the group include data
         Returns
         -------
-        datas
+        data
         """
-        datas = []
+        data = []
         for i in range(self.get_numTimes()):
-            datas.append(group[str(i)])
-        return np.array(datas)
+            data.append(group[str(i)])
+        return np.array(data)
 
         
 
-    def get_animation_datas(self):
+    def get_animation_data(self):
         """
-        Get animation datas over time.
+        Get animation data over time.
         Returns
         -------
-        animation datas over time        
+        animation data over time        
         """
         animation_group = self.h5file['Animation']
-        return self.get_datas_over_time(animation_group)
+        return self.get_data_over_time(animation_group)
     
-    def get_curve_datas(self):
+    def get_curve_data(self):
         """
-        Get curve datas over time.
+        Get curve data over time.
         Returns
         -------
-        curve datas over time        
+        curve data over time        
         """
         curve_group = self.h5file['Curve']
-        return self.get_datas_over_time(curve_group)
+        return self.get_data_over_time(curve_group)
         

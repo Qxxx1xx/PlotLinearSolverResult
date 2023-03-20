@@ -58,10 +58,10 @@ f.print_directory_information()
 ​     '/TimeStamps']
 ```
 
-Get the keys of the attributes of the dataset.
+Get the keys of the attribute of the dataset.
 
 ```python
-keys = f.get_keys_attrs_dset('/Animation/Index/Part_Beam/Part_BeamNodes')
+keys = f.get_keys_attr_dset('/Animation/Index/Part_Beam/Part_BeamNodes')
 keys[5]
 ```
 
@@ -69,19 +69,21 @@ keys[5]
 ​    'PhysicalDisplacementY'
 ```
 
-Using `get_index_attr_dset_in_datas` to get the index of the attribute of the dataset in the data over times.
+Using `get_index_attr_dset_in_data` to get the index of the attribute of the dataset in the data over times.
 
-Using `get_animation_datas` to get animation datas over time.
+Using `get_keys_attr_dset_with_index_in_data` to get the keys of the attribute of the dataset with the index in the data.
 
-Using `get_TimesStamps` to get TimesStamps datas.
+Using `get_animation_data` to get animation data over time.
 
-Finally, you can plot with times and datas.
+Using `get_TimesStamps` to get TimesStamps data.
+
+Finally, you can plot with times and data.
 
 ```python
-index = f.get_index_attr_dset_in_datas('/Animation/Index/Part_Beam/Part_BeamNodes',keys[5])
-animation_datas = f.get_animation_datas()
+index = f.get_index_attr_dset_in_data('/Animation/Index/Part_Beam/Part_BeamNodes',keys[5])
+animation_data = f.get_animation_data()
 times = f.get_TimeStamps()
-plt.plot(times,animation_datas[:,index[0]])
+plt.plot(times,animation_data[:,index[0]])
 ```
 
 ```
